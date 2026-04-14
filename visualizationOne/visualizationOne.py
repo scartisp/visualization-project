@@ -8,7 +8,7 @@ dfIncome = dfIncome.drop(dfIncome.index[0:66])
 dfIncome = dfIncome.drop(dfIncome.index[425:518])
 dfIncome = dfIncome.drop(columns=dfIncome.columns[2:12])
 dfIncome = dfIncome.drop(columns=dfIncome.columns[4:6])
-#print(dfIncome)
+print(dfIncome)
 
 
 #make the line chart for the information about racial voting patterns
@@ -51,9 +51,11 @@ dataforVote = {
 }
 
 #make data frame from dict
+#TODO this is actually in a very usuable form, maybe I should just save this to a csv and use it instead of og data?
 dfVoteExtracted = pd.DataFrame(dataforVote)
 
 #!CHANGE THE TITLE FOR THIS FIGURE
-voteFig = px.line(dfVoteExtracted, x='Year', y=['White', 'White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)'], title='Please God')
-voteFig.show()
+#TODO, change the mini-pop up key text, choose a better font
+# voteFig = px.line(dfVoteExtracted, x='Year', y=['White', 'White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)'], title='Please God')
+# voteFig.show()
 
