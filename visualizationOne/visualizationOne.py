@@ -3,14 +3,6 @@
 import pandas as pd
 import plotly.express as px
 
-dfIncome = pd.read_excel('../data/tableA2.xlsx', header=None)
-dfIncome = dfIncome.drop(dfIncome.index[0:66])
-dfIncome = dfIncome.drop(dfIncome.index[425:518])
-dfIncome = dfIncome.drop(columns=dfIncome.columns[2:12])
-dfIncome = dfIncome.drop(columns=dfIncome.columns[4:6])
-print(dfIncome)
-
-
 #make the line chart for the information about racial voting patterns
 def removeInvalidVoteData(voteData):
     return [None if isinstance(x, str) else x for x in voteData]
@@ -56,6 +48,40 @@ dfVoteExtracted = pd.DataFrame(dataforVote)
 
 #!CHANGE THE TITLE FOR THIS FIGURE
 #TODO, change the mini-pop up key text, choose a better font
-# voteFig = px.line(dfVoteExtracted, x='Year', y=['White', 'White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)'], title='Please God')
-# voteFig.show()
+voteFig = px.line(dfVoteExtracted, x='Year', y=['White', 'Black', 'Asian', 'Hispanic (Any Race)'], title='Please God')
+#voteFig.show()
 
+
+rawIncomeDf = pd.read_csv('../data/racialIncome.csv')
+rawIncomeDf = rawIncomeDf.drop(rawIncomeDf.columns[0:11], axis=1).reset_index(drop=True)
+rawIncomeDf = rawIncomeDf.drop(rawIncomeDf.columns[1:4], axis=1).reset_index(drop=True)
+
+incomeDf = pd.DataFrame(index=range(92), columns=['Median Income', 'Year', 'Race' ])
+# set up year and race labels for the income dataframe
+year = 2024
+iteratorThruRaw = 0
+for i in range(0, 92) :
+    incomeDf.loc[i, 'Year'] = year
+    year = year -1 if year > 2002 else  2024 
+    if i < 23:
+        incomeDf.loc[i, 'Race'] = 'White'
+    elif i >= 23 and i < 46:
+        incomeDf.loc[i, 'Race'] = 'Black'
+    elif i >= 46 and i < 69:
+        incomeDf.loc[i, 'Race'] = 'Asian'
+    else:
+        incomeDf.loc[i, 'Race'] = 'Hispanic (Any Race)'
+        # find instances in og data frame relate to the specific race entries we desire. then start putting it in new dataframe
+    while (rawIncomeDf.loc[iteratorThruRaw, 'Race'] != 'WHITE ALONE, NOT HISPANIC' and rawIncomeDf.loc[iteratorThruRaw, 'Race'] != 'BLACK ALONE'
+           and rawIncomeDf.loc[iteratorThruRaw, 'Race'] != 'ASIAN ALONE' and rawIncomeDf.loc[iteratorThruRaw, 'Race'] !=  'HISPANIC (ANY RACE)'):
+        #print((rawIncomeDf.loc[iteratorThruRaw, 'Race']))
+        iteratorThruRaw += 1
+    if rawIncomeDf.loc[iteratorThruRaw, 'Year'] == 2013:
+        iteratorThruRaw += 1 #data has two entries for the year 2013 because of an additional census. the second entry has more addresses, so we use that one
+    incomeDf.loc[i, 'Median Income'] = rawIncomeDf.loc[iteratorThruRaw, 'Median Estimate']
+    iteratorThruRaw += 1 
+    if rawIncomeDf.loc[iteratorThruRaw, 'Year'] == 2017 :
+        iteratorThruRaw += 1 #data has two entries for the year 2017 due to updated processing system. Use the first, skip the second. same for 2013, only it is due to the 
+    
+print(incomeDf)
+incomeDf.to_csv('test.csv')
