@@ -48,8 +48,11 @@ dfVoteExtracted = pd.DataFrame(dataforVote)
 
 #!CHANGE THE TITLE FOR THIS FIGURE
 #TODO, change the mini-pop up key text, choose a better font
-voteFig = px.line(dfVoteExtracted, x='Year', y=['White', 'Black', 'Asian', 'Hispanic (Any Race)'], title='Please God')
+voteFig = px.line(dfVoteExtracted, x='Year', y=['White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)'], labels= {'Citizen Voter Percentage', 'Year'}, title='Change in Voting Percentage Over Time')
 #voteFig.show()
+voteFig.update_layout(
+    plot_bgcolor='black'
+)
 
 
 rawIncomeDf = pd.read_csv('../data/racialIncome.csv')
@@ -82,6 +85,16 @@ for i in range(0, 92) :
     iteratorThruRaw += 1 
     if rawIncomeDf.loc[iteratorThruRaw, 'Year'] == 2017 :
         iteratorThruRaw += 1 #data has two entries for the year 2017 due to updated processing system. Use the first, skip the second. same for 2013, only it is due to the 
+
+incomeFig = px.line( incomeDf, x='Year', y='Median Income', color='Race', title= "Change in Median Income Over Time")
+#incomeFig.show()
+incomeFig.update_layout(
+    plot_bgcolor='black'
+)
+
+with open('lineCharts.html', 'w') as f:
+    f.write(voteFig.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(incomeFig.to_html(full_html=False, include_plotlyjs=False))
     
-print(incomeDf)
-incomeDf.to_csv('test.csv')
+#print(incomeDf)
+#incomeDf.to_csv('test.csv')
