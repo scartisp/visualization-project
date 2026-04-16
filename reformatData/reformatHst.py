@@ -11,7 +11,7 @@ rawTable = rawTable.drop(columns=colsToDrop)
 replaceNInCols = rawTable.columns[2:14]
 rawTable[replaceNInCols] = rawTable[replaceNInCols].replace('N', np.nan)
 
-rawTable = rawTable.rename(columns= {
+tableReformated = rawTable.rename(columns= {
     0: 'Year',
     1: 'Total Voting-Age Population',
     3: 'Total Percent',
@@ -19,9 +19,10 @@ rawTable = rawTable.rename(columns= {
     7: 'White Non-Hispanic',
     9:'Black',
     11: 'Asian',
-    13: 'White Hispanic (Any Race)',
+    13: 'Hispanic (Any Race)',
     14: 'Total Male Population Percentage',
     15: 'Total Female Population Percentage'
 })
 
-print(rawTable)
+print(tableReformated)
+#tableReformated.to_csv('../data/racialVote.csv')

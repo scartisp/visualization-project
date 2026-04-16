@@ -3,56 +3,23 @@
 import pandas as pd
 import plotly.express as px
 
-#make the line chart for the information about racial voting patterns
-def removeInvalidVoteData(voteData):
-    return [None if isinstance(x, str) else x for x in voteData]
+voteDf = pd.read_csv('../data/racialVote.csv')
 
-#get rid of the information that is not relevant
-dfVote = pd.read_excel('../data/hst_vote01.xlsx', header=None)
-dfVote = dfVote.drop(dfVote.index[38:356])
-dfVote = dfVote.drop(dfVote.index[0:4])
-dfVote = dfVote.drop(columns=dfVote.columns[14:16])
-dfVote = dfVote.drop(columns=dfVote.columns[2::2])
+voteDf = voteDf.drop(voteDf.columns[[0,2,3,4,9,10]], axis=1)
+#melt changes format. id_vars= 'Year' keeps the year column the same. 'var_name='Race' creates a new column out of the previous column titles (minus Year Col)
+#'value_name' creates a new column out of the pieces of data that are in the original columns
+voteDf = voteDf.melt(id_vars='Year', var_name='Race', value_name='Voting Percentage')
+voteDf.to_csv('test.csv')
+#print(voteDf)
 
-#this isn't done smartly, but whatever. Get the different parts, put them all into arrays which are then put into a dict
-voteYears = voteWhiteNonHis = dfVote.iloc[3:27, 0].dropna().to_list()
-voteWhite = dfVote.iloc[2:27, 3].dropna().to_list()
-voteWhite = removeInvalidVoteData(voteWhite)
-
-voteWhiteNonHis = dfVote.iloc[2:27, 4].dropna().to_list()
-voteWhiteNonHis = removeInvalidVoteData(voteWhiteNonHis)
-
-voteBlack = dfVote.iloc[2:27, 5].dropna().to_list()
-voteBlack = removeInvalidVoteData(voteBlack)
-
-voteAsian = dfVote.iloc[2:27, 6].dropna().to_list()
-voteAsian = removeInvalidVoteData(voteAsian)
-
-
-voteHispanic = dfVote.iloc[2:27, 7].dropna().to_list()
-voteHispanic = removeInvalidVoteData(voteHispanic)
-
-
-dataforVote = {
-    'Year': voteYears,
-    'White': voteWhite,
-    'White Non-Hispanic': voteWhiteNonHis,
-    'Black': voteBlack,
-    'Asian': voteAsian,
-    'Hispanic (Any Race)': voteHispanic    
-}
-
-#make data frame from dict
-#TODO this is actually in a very usuable form, maybe I should just save this to a csv and use it instead of og data?
-dfVoteExtracted = pd.DataFrame(dataforVote)
-
-#!CHANGE THE TITLE FOR THIS FIGURE
-#TODO, change the mini-pop up key text, choose a better font
-voteFig = px.line(dfVoteExtracted, x='Year', y=['White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)'], labels= {'Citizen Voter Percentage', 'Year'}, title='Change in Voting Percentage Over Time')
-#voteFig.show()
+voteFig = px.line(voteDf, x='Year', y='Voting Percentage', color='Race', title='Change in Voting Percentage Over Time' )
+#start earlier (because NaN values make the og range too large)
+voteFig.update_xaxes(range= [1978, 2024])
+#update color of background
 voteFig.update_layout(
     plot_bgcolor='black'
 )
+# voteFig.show()
 
 
 rawIncomeDf = pd.read_csv('../data/racialIncome.csv')
@@ -67,7 +34,7 @@ for i in range(0, 92) :
     incomeDf.loc[i, 'Year'] = year
     year = year -1 if year > 2002 else  2024 
     if i < 23:
-        incomeDf.loc[i, 'Race'] = 'White'
+        incomeDf.loc[i, 'Race'] = 'White Non-Hispanic'
     elif i >= 23 and i < 46:
         incomeDf.loc[i, 'Race'] = 'Black'
     elif i >= 46 and i < 69:
@@ -86,12 +53,12 @@ for i in range(0, 92) :
     if rawIncomeDf.loc[iteratorThruRaw, 'Year'] == 2017 :
         iteratorThruRaw += 1 #data has two entries for the year 2017 due to updated processing system. Use the first, skip the second. same for 2013, only it is due to the 
 
-incomeFig = px.line( incomeDf, x='Year', y='Median Income', color='Race', title= "Change in Median Income Over Time")
-#incomeFig.show()
+incomeFig = px.line(incomeDf, x='Year', y='Median Income', color='Race', title= "Change in Median Income Over Time")
 incomeFig.update_layout(
     plot_bgcolor='black'
 )
-
+#incomeFig.show()
+#TODO Make titles bigger, choose better color scheme, choose better font? add dots to data points?
 with open('lineCharts.html', 'w') as f:
     f.write(voteFig.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(incomeFig.to_html(full_html=False, include_plotlyjs=False))
