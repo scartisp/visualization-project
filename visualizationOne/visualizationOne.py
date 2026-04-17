@@ -9,15 +9,20 @@ voteDf = voteDf.drop(voteDf.columns[[0,2,3,4,9,10]], axis=1)
 #melt changes format. id_vars= 'Year' keeps the year column the same. 'var_name='Race' creates a new column out of the previous column titles (minus Year Col)
 #'value_name' creates a new column out of the pieces of data that are in the original columns
 voteDf = voteDf.melt(id_vars='Year', var_name='Race', value_name='Voting Percentage')
-voteDf.to_csv('test.csv')
+#voteDf.to_csv('test.csv')
 #print(voteDf)
 
-voteFig = px.line(voteDf, x='Year', y='Voting Percentage', color='Race', title='Change in Voting Percentage Over Time' )
+voteFig = px.line(voteDf, x='Year', y='Voting Percentage', custom_data=['Race'], color='Race', title='Change in Voting Percentage Over Time', color_discrete_sequence= px.colors.qualitative.G10)
 #start earlier (because NaN values make the og range too large)
 voteFig.update_xaxes(range= [1978, 2024])
 #update color of background
 voteFig.update_layout(
-    plot_bgcolor='black'
+    plot_bgcolor='black',
+    font_family='balto',
+    title_font_size=30
+)
+voteFig.update_traces(
+    hovertemplate= 'Race: %{customdata[0]}<br>' + 'Year: %{x}<br>' + 'Voting Percentage: %{y}%<extra></extra>'
 )
 # voteFig.show()
 
@@ -53,12 +58,18 @@ for i in range(0, 92) :
     if rawIncomeDf.loc[iteratorThruRaw, 'Year'] == 2017 :
         iteratorThruRaw += 1 #data has two entries for the year 2017 due to updated processing system. Use the first, skip the second. same for 2013, only it is due to the 
 
-incomeFig = px.line(incomeDf, x='Year', y='Median Income', color='Race', title= "Change in Median Income Over Time")
+incomeFig = px.line(incomeDf, x='Year', y='Median Income', color='Race', custom_data=['Race'], title= "Change in Median Income Over Time", markers=True, color_discrete_sequence= px.colors.qualitative.G10)
 incomeFig.update_layout(
-    plot_bgcolor='black'
+    plot_bgcolor='black',
+     font_family='balto',
+    title_font_size=30
+)
+incomeFig.update_traces(
+    hovertemplate= 'Race: %{customdata[0]}<br>' + 'Year: %{x}<br>' + 'Median Income: $%{y}<extra></extra>'
 )
 #incomeFig.show()
-#TODO Make titles bigger, choose better color scheme, choose better font? add dots to data points?
+#TODO the first data table (vote) doesn't have data on mixed races, so truncated second table (money) to match. MENTIONS THIS ON THE PAGE
+#TODO add sliders for year range (a nicety)
 with open('lineCharts.html', 'w') as f:
     f.write(voteFig.to_html(full_html=False, include_plotlyjs='cdn'))
     f.write(incomeFig.to_html(full_html=False, include_plotlyjs=False))
