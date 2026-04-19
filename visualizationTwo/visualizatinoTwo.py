@@ -10,7 +10,7 @@ voteDf = voteDf.drop(voteDf.columns[[0,2,3,4,9,10]], axis=1)
 #melt changes format. id_vars= 'Year' keeps the year column the same. 'var_name='Race' creates a new column out of the previous column titles (minus Year Col)
 #'value_name' creates a new column out of the pieces of data that are in the original columns
 voteDf = voteDf.melt(id_vars='Year', var_name='Race', value_name='Voting Percentage')
-voteDf.to_csv('test.csv')
+#voteDf.to_csv('test.csv')
 #print(voteDf)
 
 
@@ -55,7 +55,7 @@ combinedDf = incomeDf.merge(voteDf[['Race', 'Year', 'Voting Percentage']],
 
 #combinedDf.to_csv('combined.csv')
 
-yearOrder = list(range(2002, 2025, 1))  # 2024 down to 2002
+yearList = list(range(2002, 2025, 1))  # 2024 down to 2002
 
 scatterFig = px.scatter(
     combinedDf,
@@ -63,7 +63,7 @@ scatterFig = px.scatter(
     y="Median Income",
     color="Race",
     animation_frame="Year",
-    category_orders={"Year": yearOrder},
+    category_orders={"Year": yearList},
     custom_data=['Race'],
     title="Median Income vs Voting Percentage by Race",
     color_discrete_sequence= px.colors.qualitative.G10
@@ -77,7 +77,10 @@ scatterFig.update_traces(
 scatterFig.update_layout(
     plot_bgcolor='black',
     font_family='balto',
-    title_font_size=30
+    title_font_size=30,
+    sliders=[{
+        'currentvalue': {'prefix': 'Year: '}
+    }]
 )
 
 scatterFig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 1200
