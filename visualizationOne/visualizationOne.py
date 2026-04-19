@@ -3,6 +3,7 @@
 import pandas as pd
 import plotly.express as px
 
+#data frame for the vote data
 voteDf = pd.read_csv('../data/racialVote.csv')
 
 voteDf = voteDf.drop(voteDf.columns[[0,2,3,4,9,10]], axis=1)
@@ -31,6 +32,7 @@ rawIncomeDf = pd.read_csv('../data/racialIncome.csv')
 rawIncomeDf = rawIncomeDf.drop(rawIncomeDf.columns[0:11], axis=1).reset_index(drop=True)
 rawIncomeDf = rawIncomeDf.drop(rawIncomeDf.columns[1:4], axis=1).reset_index(drop=True)
 
+#data frame for the income data
 incomeDf = pd.DataFrame(index=range(92), columns=['Median Income', 'Year', 'Race' ])
 # set up year and race labels for the income dataframe
 year = 2024
