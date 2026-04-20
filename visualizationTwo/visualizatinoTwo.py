@@ -82,10 +82,72 @@ scatterFig.update_layout(
         'currentvalue': {'prefix': 'Year: '}
     }]
 )
-
 scatterFig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 1200
 scatterFig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 400
 # scatterFig.show()
+#scatterFig.write_html('scatterPlot.html', auto_play=False)
 
-#TODO it looks kinda funny because midterms consistently have a lower voter turnout. add two more scatter plots, one with only midterms and the other with only elections?
-scatterFig.write_html('scatterPlot.html', auto_play=False)
+#scatter plots for primary years
+primaryDf = combinedDf[combinedDf['Year'] % 4 == 0]
+primaryYears = list(range(2004, 2025, 4)) 
+primaryFig = px.scatter(
+    primaryDf,
+    x="Voting Percentage",
+    y="Median Income",
+    color="Race",
+    animation_frame="Year",
+    category_orders={"Year": primaryYears},
+    custom_data=['Race'],
+    title="Median Income vs Voting Percentage by Race for Primary Years",
+    color_discrete_sequence= px.colors.qualitative.G10
+)
+primaryFig.update_xaxes(range=[40, 80])  
+primaryFig.update_yaxes(range=[30000, 130000])
+primaryFig.update_traces(
+    marker=dict(size=20),
+    hovertemplate= 'Race: %{customdata[0]}<br>' + 'Voting Percentage: %{x}%<br>' + 'Median Income: %{y}<extra></extra>'
+)
+primaryFig.update_layout(
+    plot_bgcolor='black',
+    font_family='balto',
+    title_font_size=30,
+    sliders=[{
+        'currentvalue': {'prefix': 'Year: '}
+    }]
+)
+primaryFig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 1200
+primaryFig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 400
+
+#primaryFig.show()
+
+midtermDf = combinedDf[combinedDf['Year'] % 4 != 0]
+midtermYears = list(range(2002, 2022, 4)) 
+midtermFig = px.scatter(
+    midtermDf,
+    x="Voting Percentage",
+    y="Median Income",
+    color="Race",
+    animation_frame="Year",
+    category_orders={"Year": midtermYears},
+    custom_data=['Race'],
+    title="Median Income vs Voting Percentage by Race for Midterm Years",
+    color_discrete_sequence= px.colors.qualitative.G10
+)
+midtermFig.update_xaxes(range=[20, 60])  
+midtermFig.update_yaxes(range=[30000, 130000])
+midtermFig.update_traces(
+    marker=dict(size=20),
+    hovertemplate= 'Race: %{customdata[0]}<br>' + 'Voting Percentage: %{x}%<br>' + 'Median Income: %{y}<extra></extra>'
+)
+midtermFig.update_layout(
+    plot_bgcolor='black',
+    font_family='balto',
+    title_font_size=30,
+    sliders=[{
+        'currentvalue': {'prefix': 'Year: '}
+    }]
+)
+midtermFig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 1200
+midtermFig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 400
+
+#midtermFig.show()
