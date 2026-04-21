@@ -21,7 +21,7 @@ changeFig(incomeVoteFig)
 incomeVoteFig.update_traces(
     hovertemplate= 'Income Amount: %{x}<br>' + 'Percent voted: %{y}%<extra></extra>'
 )
-incomeVoteFig.show()
+#incomeVoteFig.show()
 
 raceVoteDf = pd.read_csv('../data/racialVote.csv')
 
@@ -37,4 +37,43 @@ raceVoteFig.update_traces(
 )
 #! I don't really know if I like this bar chart, feels a little needless. Might want to scrap and just replace with layered histogram
 #! maybe I do like it, idk
-raceVoteFig.show()
+#raceVoteFig.show()
+
+rawIncomeRaceDf = pd.read_csv('../data/racialIncome.csv')
+rawIncomeRaceDf = rawIncomeRaceDf.drop(rawIncomeRaceDf.columns[0:2], axis=1).reset_index(drop=True)
+rawIncomeRaceDf = rawIncomeRaceDf.drop(rawIncomeRaceDf.columns[9:13], axis=1).reset_index(drop=True)
+rawIncomeRaceDf = rawIncomeRaceDf[rawIncomeRaceDf['Year'] == 2024]
+rawIncomeRaceDf = rawIncomeRaceDf[rawIncomeRaceDf['Race'].isin(['WHITE ALONE, NOT HISPANIC','BLACK ALONE', 'ASIAN ALONE', 'HISPANIC (ANY RACE)'])]
+
+incomeCols = [c for c in rawIncomeRaceDf.columns if c not in ['Year', 'Race']]
+incomeRaceDf = rawIncomeRaceDf.melt(
+    id_vars=['Year', 'Race'],
+    value_vars=incomeCols,
+    var_name='Income Range',
+    value_name= 'Percentage'
+)
+
+incomeRaceFig = px.bar(
+    incomeRaceDf,
+    x="Income Range",
+    y="Percentage",
+    color="Race",
+    barmode="overlay",
+    category_orders={
+        "Income Range": [
+            "Under 15,000",
+            "15,000 to 24,999",
+            "25,000 to 34,999",
+            "35,000 to 49,999",
+            "50,000 to 74,999",
+            "75,000 to 99,999",
+            "100,000 to 149,999",
+            "150,000 and over"
+        ]
+    }
+)
+
+incomeRaceFig.update_traces(opacity=0.6)
+incomeRaceFig.show()
+print(incomeRaceDf)
+incomeRaceFig.show()
