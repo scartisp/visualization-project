@@ -53,27 +53,35 @@ incomeRaceDf = rawIncomeRaceDf.melt(
     value_name= 'Percentage'
 )
 
-incomeRaceFig = px.bar(
-    incomeRaceDf,
-    x="Income Range",
-    y="Percentage",
-    color="Race",
-    barmode="overlay",
-    category_orders={
-        "Income Range": [
-            "Under 15,000",
-            "15,000 to 24,999",
-            "25,000 to 34,999",
-            "35,000 to 49,999",
-            "50,000 to 74,999",
-            "75,000 to 99,999",
-            "100,000 to 149,999",
-            "150,000 and over"
-        ]
-    }
+incomeRaceDf = incomeRaceDf.replace({
+    'Under $15,000': 'Under 15,000',
+    '$15,000 to $24,999': '15,000 to 24,999',
+    '$25,000 to 34,999': '25,000 to 34,999',
+    '$35,000 to 49,999': '35,000 to 49,999',
+    '$50,000 to 74,999': '50,000 to 74,999',
+    '$75,000 to $99,999': '75,000 to 99,999',
+    '$100,000 to 149,999': '100,000 to 149,999',
+    '$150,000 to $199,999': '150,000 to 199,999',
+    '$200,000 and over': '200,000 and over',
+
+    'WHITE ALONE, NOT HISPANIC': 'White Non-Hispanic',
+    'BLACK ALONE': 'Black',
+    'ASIAN ALONE': 'Asian',
+    'HISPANIC (ANY RACE)': 'Hispanic (Any Race)'
+})
+
+incomeRaceFig = px.bar(incomeRaceDf, x='Income Range', y='Percentage', color='Race', custom_data=['Race'], barmode='overlay', title='Income Distribution per Race, 2024')
+changeFig(incomeRaceFig)
+incomeRaceFig.update_traces(
+    hovertemplate= 'Race: %{customdata[0]}<br>' + 'Income Range: %{x}<br>' + 'Percentage: %{y}%<extra></extra>'
 )
+incomeRaceFig.update_xaxes(title='Income Range in USD')
 
 incomeRaceFig.update_traces(opacity=0.6)
-incomeRaceFig.show()
-print(incomeRaceDf)
-incomeRaceFig.show()
+#incomeRaceFig.show()
+#print(incomeRaceDf)
+
+with open('visualizationThree.html', 'w') as f:
+    f.write(incomeVoteFig.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(incomeRaceFig.to_html(full_html=False, include_plotlyjs=False))
+    f.write(raceVoteFig.to_html(full_html=False, include_plotlyjs=False))
