@@ -151,3 +151,8 @@ midtermFig.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 1200
 midtermFig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 400
 
 #midtermFig.show()
+
+with open('scatterPlots.html', 'w') as f:
+    f.write(scatterFig.to_html(full_html=False, auto_play=False, include_plotlyjs='cdn'))
+    f.write(primaryFig.to_html(full_html=False, auto_play=False, include_plotlyjs=False))
+    f.write(midtermFig.to_html(full_html=False, auto_play=False, include_plotlyjs=False))
