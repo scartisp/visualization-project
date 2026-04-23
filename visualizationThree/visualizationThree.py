@@ -13,7 +13,7 @@ def changeFig(fig):
 
 incomeVoteDf = pd.read_csv('../data/incomeVote.csv')
 incomeVoteDf = incomeVoteDf[['Income Amount', 'Percent Reported Voted']]
-
+#!THIS IS USES THE HISTOGRAM FUNCTION, BUT ITS NOT REALLY A HISTOGRAM. IT WAS ORIGINALLY SUPPOSED TO BE, WHICH IS WHY THIS FUNCTION CALL IS USED. IT IS A BAR CHART
 incomeVoteFig = px.histogram(incomeVoteDf, x='Income Amount', y='Percent Reported Voted', title= 'Percent Reported Voted by Family Income Range, 2024', color_discrete_sequence= px.colors.qualitative.G10)
 #incomeVoteFig.update_layout(bargap=0.001)
 incomeVoteFig.update_yaxes(title='Percent Voted')
@@ -36,8 +36,6 @@ changeFig(raceVoteFig)
 raceVoteFig.update_traces(
     hovertemplate= 'Race: %{x}<br>' + 'Percent voted: %{y}%<extra></extra>'
 )
-#! I don't really know if I like this bar chart, feels a little needless. Might want to scrap and just replace with layered histogram
-#! maybe I do like it, idk
 #raceVoteFig.show()
 
 rawIncomeRaceDf = pd.read_csv('../data/racialIncome.csv')

@@ -11,6 +11,20 @@
 
 <body>
   <h1 id="mainHeader">CSCE 567 Final</h1>
+  <a href="./Cartis+Outline+for+Final+Project+Proposal.pdf">original project proposal</a> <br>
+  <a href="./peerReview/Peer Review 1 - Georg Clavin.pdf">peer review 1</a> <br>
+  <a href="./peerReview/Simion Cartis Peer Evaluation.pdf">peer review 2</a> <br>
+  <a href="./peerReview/InstructorFeedback.png">Instructor Feedback</a> <br>
+  <a href="./CSCE567 Project Proposal Revised.pdf">revised project proposal</a>
+  <h2>Changes Made to Proposal</h2>
+  <p>- the second peer review argued that I should provide explanation as to why I thought race and income may have an
+    effect on who votes, so I added a brief explanation to the introduction section.<br><br>- Both the instructor and the
+    second peer review suggested more visuals, with the second peer review specifically suggesting a scatter plot.
+    Seeing this as a good idea, I took up the suggestion and added scatter plots. an additional visualization group for
+    this is now added to the proposed visualizations section.<br><br>- Seeing as a neither a layered histogram or normal
+    histogram was used in the third visualization group, I removed them and replaced the descirption with what was
+    actually used (a grouped and normal bar chart).<br><br>- Seeing as the addition of JavaScript was never used (and I felt
+    it was unneccessairy), I removed it from the plan A description.</p>
   <div summary>
     <h2>Abstract</h2>
     <p>This website holds visualizations comparing trends related to the voting demographic in the United States between
@@ -42,7 +56,8 @@
     <p>It seems, regarding percentage of voting population, the interaction between race and income do not seem
       signifcant. However, taken to account individually, both race and income do seem significant: Whites have the
       highest voter percentage, followed by Blacks, and Asians having an average voting percentage only 1.94% higher
-      than Hispanics (from 1990-2024). People who reported having a annual family income of $150,000 or over have a 35.9% higher voter
+      than Hispanics (from 1990-2024). People who reported having a annual family income of $150,000 or over have a
+      35.9% higher voter
       percentage than those with a family income under $10,000.</p>
   </div>
 
@@ -71,6 +86,14 @@
       background.<br>For the data points, I chose px.colors.qualitative.G10 because I felt it gave a good contrast
       between each race which was especially important for the first line chart, as often the lines overlapped</p>
 
+    <h3>Interactive Elements</h3>
+    <p>All intereactive elements were created by the plotly.express Python extension. The main two interactive elements
+      that I find the most important are the hover element and removing/adding elements to a visual. the hover element
+      gives you exact numbers for a given data point, which is useful for actually understanding what values a specific
+      data point has, and adding/removing elements allow you to focus on specific parts of a visual if you so
+      chose.<br>Additionally, the ability to play through the different scatter plots is useful for seeing change over
+      time while keeping the scatter plot simple and 2d</p>
+
     <h3>Graph Choices</h3>
     <p>I chose line charts for my first visualization as I wanted to show the change over time of both income and voting
       percentage for all 4 races. However, to prevent cluttering as well as to show the relation between race and voting
@@ -79,7 +102,8 @@
       racial income, and voting percentage. Additionally, because the midterms consistently have a lower voter turnout,
       it can be hard to understand trends over time in the first scatter plot. Therefore, I created two more, one for
       the primaries and the other for the midterms, to better show trends for both.<br>For the last grouping of visuals,
-      I chose to represent voter percentage for family income ranges with a bar chart because I felt it best showed the distribution for
+      I chose to represent voter percentage for family income ranges with a bar chart because I felt it best showed the
+      distribution for
       each income range. The addition of the grouped bar chart showing income distribution per race and the normal
       bar chart showing voting percentage by race was included to show that, while there is a correlation between income
       range and voting percentage, that correlation is lost when you also look at racial patterns. A grouped bar chart
@@ -96,11 +120,17 @@
       while keeping the layout simple and straight forward.<br>The grouped bar chart in the last visualization group was
       originaly a stacked bar chart. However, I realized that did not make much sense, as each subgroup of a bar were
       not parts of the same whole, so it was changed to a grouped bar chart.</p>
-      
-      <h3>future work</h3>
-      <p>
-        Seeing that there is a relationship between annual income range and voting percentage, additional visuals can be made to show how this relation changes over time. However, I currently do not have any data before 2024 regarding this, meaning I would have to first find data that shows voting percentage for income ranges over time. Once this data is found and cleaned, a line chart similar to the ones created for the first visual groupings can be made.<br>To further expand on the racial aspects, additional data from individuals who marked two or more racial groups could be acquired and the current visualizations that already exist can be expanded to include these entries as well.</p>
-    </div>
+
+    <h2>Future Work</h2>
+    <p>
+      Seeing that there is a relationship between annual income range and voting percentage, additional visuals can be
+      made to show how this relation changes over time. However, I currently do not have any data before 2024 regarding
+      this, meaning I would have to first find data that shows voting percentage for income ranges over time. Once this
+      data is found and cleaned, a line chart similar to the ones created for the first visual groupings can be
+      made.<br>To further expand on the racial aspects, additional data from individuals who marked two or more racial
+      groups could be acquired and the current visualizations that already exist can be expanded to include these
+      entries as well.</p>
+  </div>
 
 </body>
 
