@@ -1,0 +1,106 @@
+<!--Written by: Simion Cartis-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>summary</title>
+  <link rel="stylesheet" href="./styles/index.css">
+</head>
+
+<body>
+  <h1 id="mainHeader">CSCE 567 Final</h1>
+  <div summary>
+    <h2>Abstract</h2>
+    <p>This website holds visualizations comparing trends related to the voting demographic in the United States between
+      different races--
+      White, Black, Asian, and Hispanic-- income ranges, and how these two qualities effect the voting demographic for
+      midterm and primary elections. While there are multiple visuals that show trends over time, there is an emphasis
+      on the 2024 primary elections.</p>
+    <p>To summarize the findings, there seems to be no strong correlation between a race's annual income and the
+      percentage citizen population of that race who voted. Consistently, Asians have the highest median income,
+      followed by White, Hispanic, and Black. However, the highest racial voting percentage demographic throughout
+      1978-2024 is consistently White, followed by Black, with Aisan and Hispanic consistently competing for last.
+      Interestingly, regardless of race, voting percentage does go up given increased annual income, with 80.4% percent
+      of individuals reported to have made $150,00 or over in annual family income having voted in 2024</p>
+    <p class="note">NOTE: throughout the datasets used, distinctions are made between people who are recorded as
+      multiple races. For example, a person recorded as white can have only recorded white as their race (single race)
+      or white mixed with some other race and/or hispanic. However, One of the datasets only uses single race, so for
+      consistency, all information regarding race are gathered from "single" races data samples.</p>
+    <div links>
+      <h3>Visualization Links</h3>
+      <a href="./visualizationOne/lineCharts.html">racial voting/household income trends over time line charts</a> <br>
+      <a href="./visualizationTwo/scatterPlots.html">change in voting and household income over time scatter plots</a>
+      <br>
+      <a href="./visualizationThree/visualizationThree.html">annual income voting patterns compared racial income/voting
+        trends in 2024</a>
+    </div>
+  </div>
+  <div conclusion>
+    <h2>Conclusion</h2>
+    <p>It seems, regarding percentage of voting population, the interaction between race and income do not seem
+      signifcant. However, taken to account individually, both race and income do seem significant: Whites have the
+      highest voter percentage, followed by Blacks, and Asians having an average voting percentage only 1.94% higher
+      than Hispanics. People who reported having a annual family income of $150,000 or over have a 35.9% higher voter
+      percentage than those with a family income under $10,000.</p>
+  </div>
+
+  <div problems>
+    <h2>Problems Encountered</h2>
+    <p>The biggest probelm I encountered was data refomartting/cleaning. All of my datasets were .xlsx files instead of
+      .csv files, meaning they all had odd formatting that needed alteration before they could be used in any way. This
+      was espcially true for the "tableA2.xlsx" Excel sheet (the one on racial income) which had the years in the same
+      columns as the races. I differntiated between the year and race information using regular expressions and placed
+      them into seperate columns.<br>However, even after reformatting the data (all of which was done in
+      the reformatData folder), there was still often excess data that was uneccessary for my visuals, as I wanted to
+      take the broadest amount of data possible initially and then filter it down further for a given visualization.
+      Again, this was especially troublesome for the tableA2 excel sheet because it had significantly more race
+      groupings than the others, and due to changes to data collection, some of these racel groups had disjoint years
+      and/or
+      repeated years. I delt with this by running through a reformatted version of the original excel sheet and only
+      keeping the racial groups that where shared with the hst_vote01 excel sheet and had the most modern data as well
+      as the years with the most highest sample size (for years that were repeated).</p>
+  </div>
+
+  <div designDecisions>
+    <h2>Design decisions</h2>
+    <h3>Color Scheme</h3>
+    <p>I chose black as my background color for all of my graphs because I wanted a higher contrast for the data points,
+      which I think was especially helpful for the scatter plots, because the 4 points were easy to lose against a white
+      background.<br>For the data points, I chose px.colors.qualitative.G10 because I felt it gave a good contrast
+      between each race which was especially important for the first line chart, as often the lines overlapped</p>
+
+    <h3>Graph Choices</h3>
+    <p>I chose line charts for my first visualization as I wanted to show the change over time of both income and voting
+      percentage for all 4 races. However, to prevent cluttering as well as to show the relation between race and voting
+      percentage without the impact of income, there are two line charts.<br>The scatter plot visualizations are
+      essentially attempting to show the same thing. However, there is more emphases on the interaction between race,
+      racial income, and voting percentage. Additionally, because the midterms consistently have a lower voter turnout,
+      it can be hard to understand trends over time in the first scatter plot. Therefore, I created two more, one for
+      the primaries and the other for the midterms, to better show trends for both.<br>For the last grouping of visuals,
+      I chose to represent voter percentage for family income ranges because I felt it best showed the distribution for
+      each income range. The addition of the grouped bar chart showing income distribution per race and the normal
+      bar chart showing voting percentage by race was included to show that, while there is a correlation between income
+      range and voting percentage, that correlation is lost when you also look at racial patterns. A grouped bar chart
+      for income distribution per race was chosen because I needed to show the percentage of multiple races for a given
+      income range, and the bar chart for voting percentage per race was chosen because I beleived it was a sicinct and
+      simple way to show voting trends for a single year (as opposed to over time like in the line charts)</p>
+    <h3>Visuals Not Used</h3>
+    <p>The line charts in the first grouping of visuals could have been put into a single chart that had two different
+      y-axes (called a dual axis chart). However, I decided against that to prevent visual clutter and to more easily
+      understand the relation between race and voting percentage<br>I considered making 3d scatter plots for my second
+      grouping of visuals with time being the third dimension. However, I figured that keeping it 2 dimensional with a
+      slider would achieve the same effect of showing a change over time (maybe even better than with a 3rd dimension)
+      while keeping the layout simple and straight forward.<br>The grouped bar chart in the last visualization group was
+      originaly a stacked bar chart. However, I realized that did not make much sense, as each subgroup of a bar were
+      not parts of the same whole, so it was changed to a grouped bar chart.</p>
+      
+      <h3>future work</h3>
+      <p>
+        Seeing that there is a relationship between annual income range and voting percentage, additional visuals can be made to show how this relation changes over time. However, I currently do not have any data before 2024 regarding this, meaning I would have to first find data that shows voting percentage for income ranges over time. Once this data is found and cleaned, a line chart similar to the ones created for the first visual groupings can be made.<br>To further expand on the racial aspects, additional data from individuals who marked two or more racial groups could be acquired and the current visualizations that already exist can be expanded to include these entries as well.</p>
+    </div>
+
+</body>
+
+</html>

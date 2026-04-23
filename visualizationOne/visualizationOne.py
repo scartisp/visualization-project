@@ -60,7 +60,7 @@ for i in range(0, 92) :
     if rawIncomeDf.loc[iteratorThruRaw, 'Year'] == 2017 :
         iteratorThruRaw += 1 #data has two entries for the year 2017 due to updated processing system. Use the first, skip the second. same for 2013, only it is due to the 
 
-incomeFig = px.line(incomeDf, x='Year', y='Median Income', color='Race', custom_data=['Race'], title= "Change in Median Income Over Time", markers=True, color_discrete_sequence= px.colors.qualitative.G10)
+incomeFig = px.line(incomeDf, x='Year', y='Median Income', color='Race', custom_data=['Race'], title= "Change in Median Household Income Over Time", markers=True, color_discrete_sequence= px.colors.qualitative.G10)
 incomeFig.update_layout(
     plot_bgcolor='black',
      font_family='balto',

@@ -6,6 +6,7 @@ import plotly.express as px
 def changeFig(fig):
     fig.update_layout(
         font_family='balto',
+        plot_bgcolor='black',
         title_font_size=30
     )
 
@@ -13,7 +14,7 @@ def changeFig(fig):
 incomeVoteDf = pd.read_csv('../data/incomeVote.csv')
 incomeVoteDf = incomeVoteDf[['Income Amount', 'Percent Reported Voted']]
 
-incomeVoteFig = px.histogram(incomeVoteDf, x='Income Amount', y='Percent Reported Voted', title= 'Percent Reported Voted by Income Range, 2024', color_discrete_sequence= px.colors.qualitative.G10)
+incomeVoteFig = px.histogram(incomeVoteDf, x='Income Amount', y='Percent Reported Voted', title= 'Percent Reported Voted by Family Income Range, 2024', color_discrete_sequence= px.colors.qualitative.G10)
 incomeVoteFig.update_layout(bargap=0.001)
 incomeVoteFig.update_yaxes(title='Percent Voted')
 incomeVoteFig.update_xaxes(title='Income Amount in USD')
@@ -70,14 +71,13 @@ incomeRaceDf = incomeRaceDf.replace({
     'HISPANIC (ANY RACE)': 'Hispanic (Any Race)'
 })
 
-incomeRaceFig = px.bar(incomeRaceDf, x='Income Range', y='Percentage', color='Race', custom_data=['Race'], barmode='overlay', title='Income Distribution per Race, 2024')
+incomeRaceFig = px.bar(incomeRaceDf, x='Income Range', y='Percentage', color='Race', custom_data=['Race'], barmode='group', title='Income Distribution per Race, 2024', color_discrete_sequence= px.colors.qualitative.G10)
 changeFig(incomeRaceFig)
 incomeRaceFig.update_traces(
     hovertemplate= 'Race: %{customdata[0]}<br>' + 'Income Range: %{x}<br>' + 'Percentage: %{y}%<extra></extra>'
 )
 incomeRaceFig.update_xaxes(title='Income Range in USD')
 
-incomeRaceFig.update_traces(opacity=0.6)
 #incomeRaceFig.show()
 #print(incomeRaceDf)
 

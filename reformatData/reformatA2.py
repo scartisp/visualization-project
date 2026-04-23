@@ -36,3 +36,5 @@ dfTableA2 = dfTableA2.rename(columns= {
 
 #dfTableA2.to_csv('../data/racialIncome.csv')
 print(dfTableA2)
+
+#! VERY IMPORTANT TO NOTE, White alone, non-hispanic has signifcanlty responses than any other race in pretty much every year, make not of that
