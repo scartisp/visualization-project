@@ -15,7 +15,7 @@ incomeVoteDf = pd.read_csv('../data/incomeVote.csv')
 incomeVoteDf = incomeVoteDf[['Income Amount', 'Percent Reported Voted']]
 
 incomeVoteFig = px.histogram(incomeVoteDf, x='Income Amount', y='Percent Reported Voted', title= 'Percent Reported Voted by Family Income Range, 2024', color_discrete_sequence= px.colors.qualitative.G10)
-incomeVoteFig.update_layout(bargap=0.001)
+#incomeVoteFig.update_layout(bargap=0.001)
 incomeVoteFig.update_yaxes(title='Percent Voted')
 incomeVoteFig.update_xaxes(title='Income Amount in USD')
 changeFig(incomeVoteFig)
