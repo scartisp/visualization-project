@@ -157,13 +157,127 @@
       var panels = tabs.map(function (tab) {
         return document.getElementById(tab.getAttribute('aria-controls'));
       });
+      var frames = panels.map(function (panel) {
+        return panel.querySelector('.tab-frame');
+      });
 
-      // Point an iframe at its page the first time its tab is shown, then leave src alone
+      var MAX_FRAME_HEIGHT = 20000;
+
+      // Each chart page leaves its graph divs at height:100%, so Plotly sizes charts
+      // from the frame's own viewport. Deriving the frame height from those charts
+      // would then be circular, so the target height comes from the PARENT window,
+      // which nothing here can change.
+      function chartHeight() {
+        return Math.max(400, Math.min(900, Math.round(window.innerHeight * 0.75)));
+      }
+
+      function innerDoc(frame) {
+        try {
+          return frame.contentDocument;
+        } catch (err) {
+          return null; // cross-origin (file://) -- the CSS fallback height stands
+        }
+      }
+
+      // Pin an explicit pixel height on every chart so it stops tracking the viewport.
+      function pinCharts(frame) {
+        var doc = innerDoc(frame);
+        var win = frame.contentWindow;
+        if (!doc) {
+          return;
+        }
+        var target = chartHeight();
+        Array.prototype.forEach.call(doc.querySelectorAll('.plotly-graph-div'), function (div) {
+          div.style.height = target + 'px';
+          if (win && win.Plotly && div._fullLayout) {
+            win.Plotly.relayout(div, { height: target });
+          }
+        });
+      }
+
+      // Sum the laid-out content instead of asking for a scrollHeight. Both
+      // documentElement.scrollHeight and body.scrollHeight are at least the frame's own
+      // viewport height, so feeding either back into the frame height is self-referential
+      // -- that is what made the page grow without bound. offsetTop/offsetHeight are pure
+      // layout values and cannot see the viewport.
+      function contentHeight(doc, win) {
+        var bottom = 0;
+        Array.prototype.forEach.call(doc.body.children, function (el) {
+          // getBoundingClientRect, not offsetTop/offsetHeight: Plotly appends a bare
+          // <svg> to <body>, and SVG elements have no offset* properties, which turned
+          // the whole sum into NaN.
+          var marginBottom = parseFloat(win.getComputedStyle(el).marginBottom) || 0;
+          var elementBottom = el.getBoundingClientRect().bottom + win.scrollY + marginBottom;
+          if (isFinite(elementBottom)) {
+            bottom = Math.max(bottom, elementBottom);
+          }
+        });
+        var bodyStyle = win.getComputedStyle(doc.body);
+        return bottom + (parseFloat(bodyStyle.marginBottom) || 0);
+      }
+
+      function fit(frame) {
+        var doc = innerDoc(frame);
+        var win = frame.contentWindow;
+        if (!doc || !doc.body || !win) {
+          return;
+        }
+        // A frame in a hidden panel measures as zero; skip it and keep the height it
+        // already has, so reselecting its tab doesn't flash a collapsed frame.
+        if (!frame.offsetParent) {
+          return;
+        }
+        var height = Math.ceil(contentHeight(doc, win));
+        if (!(height > 0) || height > MAX_FRAME_HEIGHT) {
+          return;
+        }
+        if (Math.abs(height - parseFloat(frame.style.height || 0)) <= 1) {
+          return;
+        }
+        // Backstop: if measuring ever feeds itself again, stop rather than run away.
+        var now = Date.now();
+        if (!frame._windowStart || now - frame._windowStart > 2000) {
+          frame._windowStart = now;
+          frame._applies = 0;
+        }
+        frame._applies += 1;
+        if (frame._applies > 12) {
+          if (frame._observer) {
+            frame._observer.disconnect();
+          }
+          return;
+        }
+        frame.style.height = height + 'px';
+      }
+
+      function sync(frame) {
+        pinCharts(frame);
+        fit(frame);
+      }
+
+      // Plotly draws after the load event and redraws on width changes, so re-measure
+      // when the inner body changes rather than measuring once.
+      function watch(frame) {
+        sync(frame);
+        var doc = innerDoc(frame);
+        if (doc && doc.body && window.ResizeObserver) {
+          frame._observer = new ResizeObserver(function () {
+            fit(frame);
+          });
+          frame._observer.observe(doc.body);
+        }
+      }
+
+      // Point a frame at its page the first time its tab is shown, then leave src alone
       // so reselecting a tab never reloads (and never restarts the scatter animations).
-      function load(panel) {
-        var frame = panel.querySelector('.tab-frame');
-        if (frame && !frame.src) {
+      function load(frame) {
+        if (!frame.src) {
+          frame.addEventListener('load', function () {
+            watch(frame);
+          });
           frame.src = frame.dataset.src;
+        } else {
+          fit(frame); // re-measure in case the window was resized while it was hidden
         }
       }
 
@@ -174,7 +288,7 @@
           tab.tabIndex = selected ? 0 : -1;
           panels[i].hidden = !selected;
         });
-        load(panels[index]);
+        load(frames[index]);
         if (focus) {
           tabs[index].focus();
         }
@@ -200,6 +314,18 @@
             activate(next, true);
           }
         });
+      });
+
+      var resizeTimer = null;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          frames.forEach(function (frame) {
+            if (frame.src) {
+              sync(frame);
+            }
+          });
+        }, 200);
       });
 
       activate(0);

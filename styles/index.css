@@ -53,12 +53,14 @@
   display: none;
 }
 
+/* The height below is only a pre-load fallback -- once the frame's page has loaded,
+   the tab script measures it and sets an exact pixel height inline, so the frame is
+   as tall as its charts and never scrolls internally. */
 .tab-frame {
   display: block;
   width: 100%;
   height: 75vh;
   border: none;
-  overflow: auto;
 }
 
 @media (max-width: 600px) {
@@ -70,9 +72,5 @@
     flex: 1 1 auto;
     padding: 0.6rem 0.5rem;
     font-size: 0.9rem;
-  }
-
-  .tab-frame {
-    height: 80vh;
   }
 }
