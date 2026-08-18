@@ -44,14 +44,31 @@
       multiple races. For example, a person recorded as white can have only recorded white as their race (single race)
       or white along with some other race. However, One of the datasets only uses single race, so for
       consistency, all information regarding race are gathered from "single" race data samples.</p>
-    <div links>
-      <h3>Visualization Links</h3>
-      <a href="./visualizationOne/lineCharts.html">racial voting/household income trends over time line charts</a> <br>
-      <a href="./visualizationTwo/scatterPlots.html">change in voting and household income over time scatter plots</a>
-      <br>
-      <a href="./visualizationThree/visualizationThree.html">annual income voting patterns compared racial income/voting
-        trends in 2024</a>
-    </div>
+    <section class="visualizations" aria-label="Visualizations">
+      <h3>Visualizations</h3>
+
+      <div class="tab-list" role="tablist" aria-label="Visualization groups">
+        <button class="tab-button" role="tab" id="tab-trends" type="button"
+          aria-controls="panel-trends" aria-selected="true">Trends Over Time</button>
+        <button class="tab-button" role="tab" id="tab-income" type="button"
+          aria-controls="panel-income" aria-selected="false" tabindex="-1">Income vs. Turnout</button>
+        <button class="tab-button" role="tab" id="tab-snapshot" type="button"
+          aria-controls="panel-snapshot" aria-selected="false" tabindex="-1">2024 Snapshot</button>
+      </div>
+
+      <div class="tab-panel" role="tabpanel" id="panel-trends" aria-labelledby="tab-trends">
+        <iframe class="tab-frame" title="Voting and household income trends over time"
+          data-src="./visualizationOne/lineCharts.html"></iframe>
+      </div>
+      <div class="tab-panel" role="tabpanel" id="panel-income" aria-labelledby="tab-income" hidden>
+        <iframe class="tab-frame" title="Median income versus voting percentage, animated by year"
+          data-src="./visualizationTwo/scatterPlots.html"></iframe>
+      </div>
+      <div class="tab-panel" role="tabpanel" id="panel-snapshot" aria-labelledby="tab-snapshot" hidden>
+        <iframe class="tab-frame" title="Income and voting patterns by race, 2024"
+          data-src="./visualizationThree/visualizationThree.html"></iframe>
+      </div>
+    </section>
   </div>
   <div conclusion>
     <h2>Conclusion</h2>
@@ -133,6 +150,61 @@
       groups could be acquired and the current visualizations that already exist can be expanded to include these
       entries as well.</p>
   </div>
+
+  <script>
+    (function () {
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab-button'));
+      var panels = tabs.map(function (tab) {
+        return document.getElementById(tab.getAttribute('aria-controls'));
+      });
+
+      // Point an iframe at its page the first time its tab is shown, then leave src alone
+      // so reselecting a tab never reloads (and never restarts the scatter animations).
+      function load(panel) {
+        var frame = panel.querySelector('.tab-frame');
+        if (frame && !frame.src) {
+          frame.src = frame.dataset.src;
+        }
+      }
+
+      function activate(index, focus) {
+        tabs.forEach(function (tab, i) {
+          var selected = i === index;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          panels[i].hidden = !selected;
+        });
+        load(panels[index]);
+        if (focus) {
+          tabs[index].focus();
+        }
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () {
+          activate(i);
+        });
+        tab.addEventListener('keydown', function (event) {
+          var next = null;
+          if (event.key === 'ArrowRight') {
+            next = (i + 1) % tabs.length;
+          } else if (event.key === 'ArrowLeft') {
+            next = (i - 1 + tabs.length) % tabs.length;
+          } else if (event.key === 'Home') {
+            next = 0;
+          } else if (event.key === 'End') {
+            next = tabs.length - 1;
+          }
+          if (next !== null) {
+            event.preventDefault();
+            activate(next, true);
+          }
+        });
+      });
+
+      activate(0);
+    })();
+  </script>
 
 </body>
 
