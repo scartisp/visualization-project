@@ -34,3 +34,6 @@ For the last grouping of visuals, I chose to represent voter percentage for fami
 ## Future Work
 Seeing that there is a relationship between annual income range and voting percentage, additional visuals can be made to show how this relation changes over time. However, I currently do not have any data before 2024 regarding this, meaning I would have to first find data that shows voting percentage for income ranges over time. Once this data is found and cleaned, a line chart similar to the ones created for the first visual groupings can be made.
 To further expand on the racial aspects, additional data from individuals who marked two or more racial groups could be acquired and the current visualizations that already exist can be expanded to include these entries as well.
+
+## Sources Used:
+[Reported Voting and Registration by Race](/data/hst_vote01.xlsx) | [Households by Total Income](/data/tableA2.xlsx) | [Reported voting and registration by Family Income](/data/vote07_2024.xlsx)
