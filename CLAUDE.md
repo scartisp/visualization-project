@@ -113,10 +113,12 @@ committed files:
   merely appended at the end
 - reindented, human-formatted markup
 
-The scripts open these paths with `open(..., 'w')`, so **re-running a chart script silently
-destroys all of that**. Before regenerating, preserve the current file (`git stash`, a copy, or
-rely on `git diff`), and afterwards re-apply the wrapper and re-interleave the prose in the right
-positions. Diff against `git show HEAD:<path>` to confirm nothing but the Plotly payload changed.
+**This is no longer a hazard as of the Pearson-correlation pass.** Each script now writes the
+whole page -- `<head>`, `<body>`, the return link, the interleaved notes and the correlation
+paragraphs -- so regenerating is lossless and reproducible. The prose lives in the `.py` files
+now, which is where it must be edited; editing the `.html` directly will be overwritten on the
+next run. Still diff against `git show HEAD:<path>` after regenerating to confirm only what you
+intended changed.
 
 Related: the committed HTML pins the CDN to `plotly-3.5.0.min.js` with an SRI `integrity` hash, but
 the installed plotly is 6.6.0 -- regenerating changes both the URL and the hash. That is expected;

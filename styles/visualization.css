@@ -4,3 +4,11 @@
 .return {
   font-size: 20px;
 }
+.stat {
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 8px 0 18px;
+  padding: 10px 14px;
+  border-left: 3px solid #2d6cdf;
+  background: #f4f6fa;
+}

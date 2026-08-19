@@ -2,6 +2,7 @@
 
 import pandas as pd
 import plotly.express as px
+from scipy.stats import pearsonr
 
 def changeFig(fig):
     fig.update_layout(
@@ -79,7 +80,61 @@ incomeRaceFig.update_xaxes(title='Income Range in USD')
 #incomeRaceFig.show()
 #print(incomeRaceDf)
 
+#the x-axis here is a set of labelled brackets, not a number, so a Pearson r only exists if each
+#bracket is stood in for by a number. the midpoint of the underlying source bracket is used.
+#'10k-19k' is a mislabel carried over from reformatVote07.py -- the source bracket is $10,000 to $14,999
+bracketMidpoints = {
+    'Under 10,000': 5000,
+    '10k-14k': 12500,
+    '15k-19k': 17500,
+    '20k-29k': 25000,
+    '30k-39k': 35000,
+    '40k-49k': 45000,
+    '50k-74k': 62500,
+    '75k-99k': 87500,
+    '100k-149k': 125000,
+    '150,000 and over': 175000,
+}
+
+def formatP(p):
+    return 'p < 0.001' if p < 0.001 else 'p = {:.3f}'.format(p)
+
+bracketDf = incomeVoteDf.copy()
+bracketDf['Midpoint'] = bracketDf['Income Amount'].map(bracketMidpoints)
+bracketDf = bracketDf.dropna(subset=['Midpoint', 'Percent Reported Voted'])
+bracketR, bracketP = pearsonr(bracketDf['Midpoint'], bracketDf['Percent Reported Voted'])
+
+#the top bracket is open-ended, so check the answer isn't an artefact of the stand-in value picked for it
+sensitivity = []
+for topValue in (160000, 175000, 200000, 250000):
+    swapped = bracketDf['Midpoint'].replace(175000, topValue)
+    sensitivity.append(pearsonr(swapped, bracketDf['Percent Reported Voted'])[0])
+
+bracketStat = ('        <p class="stat">Pearson r, income vs. percent voted: r = {:+.2f} (n = {}, {}), using the '
+               'midpoint of each income bracket as a numeric proxy because the x-axis is categorical rather than '
+               'numeric. The open-ended top bracket is treated as $175,000; substituting anything from $160,000 to '
+               '$250,000 moves r only between {:+.2f} and {:+.2f}, so the result does not rest on that choice.</p>\n'
+               ).format(bracketR, len(bracketDf), formatP(bracketP), max(sensitivity), min(sensitivity))
+
+#the page is written out whole (wrapper, notes and all) so re-running this script never loses hand-written copy
 with open('visualizationThree.html', 'w') as f:
+    f.write("""<head>
+        <link rel="stylesheet" href="../styles/visualization.css">
+</head>
+
+<body>
+        <a class="return" href="../index.html"> return to home page</a>
+""")
+
     f.write(incomeVoteFig.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write(bracketStat)
+
     f.write(incomeRaceFig.to_html(full_html=False, include_plotlyjs=False))
     f.write(raceVoteFig.to_html(full_html=False, include_plotlyjs=False))
+    f.write("""        <p class="note">NOTE: no correlation coefficient is given for the two charts above. Race is an unordered category, so there is no numeric axis to correlate against and a Pearson r would not be meaningful</p>
+        <p> from the first histogram (titled "Percent Reported Voted by Family Income Range, 2024"), we see a clear
+                positive correlation between voting percentage and family income when race is not considered. Despite
+                this, when race is considered, the trend is no longer followed (as shown by the following two graphs)
+        </p>
+</body>
+""")

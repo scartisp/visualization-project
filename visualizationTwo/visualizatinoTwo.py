@@ -2,6 +2,7 @@
 
 import pandas as pd
 import plotly.express as px
+from scipy.stats import pearsonr
 
 #data frame for the vote data
 voteDf = pd.read_csv('../data/racialVote.csv')
@@ -152,7 +153,52 @@ midtermFig.layout.updatemenus[0].buttons[0].args[1]["transition"]["duration"] = 
 
 #midtermFig.show()
 
+raceOrder = ['White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)']
+
+def formatP(p):
+    return 'p < 0.001' if p < 0.001 else 'p = {:.3f}'.format(p)
+
+def pearsonOn(df):
+    sub = df[['Median Income', 'Voting Percentage']].apply(pd.to_numeric, errors='coerce').dropna()
+    r, p = pearsonr(sub['Median Income'], sub['Voting Percentage'])
+    return r, p, len(sub)
+
+#pooling every race together and looking at each race on its own answer different questions here,
+#so both are reported rather than picking whichever one reads better
+def statsParagraph(df):
+    r, p, n = pearsonOn(df)
+    pooled = 'pooled across all four groups r = {:+.2f} (n = {}, {})'.format(r, n, formatP(p))
+    parts = []
+    for race in raceOrder:
+        rr, pp, nn = pearsonOn(df[df['Race'] == race])
+        parts.append('{} {:+.2f} ({})'.format(race, rr, formatP(pp)))
+    return ('    <p class="stat">Pearson r, median income vs. voting percentage: ' + pooled
+            + '. Within each group separately: ' + '; '.join(parts)
+            + '. The four groups sit at different income levels, so pooling them cancels out the '
+              'within-group relationship &mdash; the pooled figure and the per-group figures are not '
+              'measuring the same thing.</p>\n')
+
+#the page is written out whole (wrapper, notes and all) so re-running this script never loses hand-written copy
 with open('scatterPlots.html', 'w') as f:
+    f.write("""<head>
+    <link rel="stylesheet" href="../styles/visualization.css">
+</head>
+
+<body>
+    <a class="return" href="../index.html"> return to home page</a>
+""")
+
     f.write(scatterFig.to_html(full_html=False, auto_play=False, include_plotlyjs='cdn'))
+    f.write(statsParagraph(combinedDf))
+
     f.write(primaryFig.to_html(full_html=False, auto_play=False, include_plotlyjs=False))
+    f.write(statsParagraph(primaryDf))
+    f.write("""    <p class="note">NOTE: each per-group figure above rests on only six elections, so the individual coefficients are unstable and are better read as suggestive than conclusive</p>
+""")
+
     f.write(midtermFig.to_html(full_html=False, auto_play=False, include_plotlyjs=False))
+    f.write(statsParagraph(midtermDf))
+    f.write("""    <p class="note">NOTE: as above, six elections per group</p>
+    <p>From these visuals, we can more clearly see that the interaction between race and income does not seem significant regarding voting percentages for either midterm or primary years, at least once all four groups are pooled together</p>
+</body>
+""")

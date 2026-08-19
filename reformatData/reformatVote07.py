@@ -14,7 +14,7 @@ tableReformated = rawTable.rename(columns= {
 })
 tableReformated['Income Amount'] = tableReformated['Income Amount'].replace({
     'Under $10,000' : 'Under 10,000',
-    '$10,000 to $14,999': "10k-19k",
+    '$10,000 to $14,999': "10k-14k",
     '$15,000 to $19,999': '15k-19k',
     '$20,000 to $29,999': '20k-29k',
     '$30,000 to $39,999': '30k-39k',

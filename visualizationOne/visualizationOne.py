@@ -2,6 +2,7 @@
 
 import pandas as pd
 import plotly.express as px
+from scipy.stats import pearsonr
 
 #data frame for the vote data
 voteDf = pd.read_csv('../data/racialVote.csv')
@@ -72,9 +73,51 @@ incomeFig.update_traces(
 #incomeFig.show()
 #TODO the first data table (vote) doesn't have data on mixed races, so truncated second table (money) to match. MENTIONS THIS ON THE PAGE
 #TODO add sliders for year range (a nicety)
+
+raceOrder = ['White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)']
+
+def formatP(p):
+    return 'p < 0.001' if p < 0.001 else 'p = {:.3f}'.format(p)
+
+#one Pearson r per race, so a chart that draws four separate lines gets four separate numbers
+def perRaceStats(df, xCol, yCol):
+    parts = []
+    for race in raceOrder:
+        sub = df[df['Race'] == race][[xCol, yCol]].apply(pd.to_numeric, errors='coerce').dropna()
+        r, p = pearsonr(sub[xCol], sub[yCol])
+        parts.append('{} r = {:+.2f} (n = {}, {})'.format(race, r, len(sub), formatP(p)))
+    return '; '.join(parts)
+
+voteStats = perRaceStats(voteDf, 'Year', 'Voting Percentage')
+incomeStats = perRaceStats(incomeDf, 'Year', 'Median Income')
+
+#the page is written out whole (wrapper, notes and all) so re-running this script never loses hand-written copy
 with open('lineCharts.html', 'w') as f:
+    f.write("""<head>
+        <link rel="stylesheet" href="../styles/visualization.css">
+</head>
+
+<body>
+       <a class="return" href="../index.html"> return to home page</a>
+""")
+
     f.write(voteFig.to_html(full_html=False, include_plotlyjs='cdn'))
+    f.write("""        <p class="stat">Pearson r, year vs. voting percentage: """ + voteStats + """. None of the four
+                reaches significance, so turnout has no reliable linear trend across this period &mdash; the two-year
+                sawtooth between presidential and midterm elections dominates each series.</p>
+        <p class="note">NOTE: due to incomplete records, information on Asian voting trends starts in 1990</p>
+        <p class="note">NOTE: the waving seen in the above graph is due to data from both midterms and primary elections being shown. Consistently, a significantly lower percentage of the population votes in the midterms</p>
+""")
+
     f.write(incomeFig.to_html(full_html=False, include_plotlyjs=False))
+    f.write("""        <p class="stat">Pearson r, year vs. median household income: """ + incomeStats + """. Every group
+                shows a strong, significant upward trend. The Census series is inflation-adjusted, so this is real
+                growth rather than nominal.</p>
+        <p class="note">NOTE: years 2017 and 2013 had multiple entries within the original dataset. I chose the entries with the larger sample size</p>
+        <p>From these line charts, we can see a persistent pattern of Asians having the highest median income, followed by Whites, Hispanics,
+                and then Blacks. However, the voting percentages do not follow this trend, with Whites consistently having a higher voting percentage, followed by Blacks, with Asians and Hispanics competing for last</p>
+</body>
+""")
     
 #print(incomeDf)
 #incomeDf.to_csv('test.csv')
