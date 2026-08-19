@@ -82,7 +82,7 @@ incomeRaceFig.update_xaxes(title='Income Range in USD')
 
 #the x-axis here is a set of labelled brackets, not a number, so a Pearson r only exists if each
 #bracket is stood in for by a number. the midpoint of the underlying source bracket is used.
-#'10k-19k' is a mislabel carried over from reformatVote07.py -- the source bracket is $10,000 to $14,999
+#the labels are the abbreviated bracket names produced by reformatVote07.py
 bracketMidpoints = {
     'Under 10,000': 5000,
     '10k-14k': 12500,
@@ -118,7 +118,8 @@ bracketStat = ('        <p class="stat">Pearson r, income vs. percent voted: r =
 
 #the page is written out whole (wrapper, notes and all) so re-running this script never loses hand-written copy
 with open('visualizationThree.html', 'w') as f:
-    f.write("""<head>
+    f.write("""<!DOCTYPE html>
+<head>
         <link rel="stylesheet" href="../styles/visualization.css">
 </head>
 

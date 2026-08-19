@@ -180,7 +180,8 @@ def statsParagraph(df):
 
 #the page is written out whole (wrapper, notes and all) so re-running this script never loses hand-written copy
 with open('scatterPlots.html', 'w') as f:
-    f.write("""<head>
+    f.write("""<!DOCTYPE html>
+<head>
     <link rel="stylesheet" href="../styles/visualization.css">
 </head>
 

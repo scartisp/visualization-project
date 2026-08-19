@@ -1,14 +1,54 @@
-.note {
-  color: red;
+/* written by Simion Cartis */
+/* These pages are shown standalone and embedded in the tabs on index.html, so the
+   styling here is kept deliberately close to the landing page's. Body spacing uses
+   margin rather than padding because the tab script measures body margins when it
+   sizes each frame. */
+
+body {
+  margin: 22px;
+  color: #16191d;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
+
 .return {
-  font-size: 20px;
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #2d5fd0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
 }
+
+.return:hover {
+  text-decoration: underline;
+}
+
+/* The computed Pearson r for the chart directly above it. */
 .stat {
-  font-size: 15px;
+  margin: 10px 0 20px;
+  padding: 11px 15px;
+  border-left: 3px solid #2d5fd0;
+  border-radius: 0 6px 6px 0;
+  background-color: #f2f6fd;
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+/* Was plain red text; a quiet callout reads better and still stands apart. */
+.note {
+  margin: 10px 0 18px;
+  padding: 9px 14px;
+  border-left: 3px solid #c8d0da;
+  border-radius: 0 6px 6px 0;
+  background-color: #f5f6f8;
+  color: #5c6672;
+  font-size: 0.9rem;
   line-height: 1.55;
-  margin: 8px 0 18px;
-  padding: 10px 14px;
-  border-left: 3px solid #2d6cdf;
-  background: #f4f6fa;
+}
+
+p {
+  max-width: 78ch;
 }

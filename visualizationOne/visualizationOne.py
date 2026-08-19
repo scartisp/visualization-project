@@ -93,7 +93,8 @@ incomeStats = perRaceStats(incomeDf, 'Year', 'Median Income')
 
 #the page is written out whole (wrapper, notes and all) so re-running this script never loses hand-written copy
 with open('lineCharts.html', 'w') as f:
-    f.write("""<head>
+    f.write("""<!DOCTYPE html>
+<head>
         <link rel="stylesheet" href="../styles/visualization.css">
 </head>
 

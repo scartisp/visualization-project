@@ -10,9 +10,14 @@
 </head>
 
 <body>
-  <div summary>
-    <h1 id="mainHeader">Voter Turnout Demographic Visualizations</h1>
-    <h2>Abstract</h2>
+  <main class="page">
+    <header class="masthead">
+      <h1 id="mainHeader">Voter Turnout Demographic Visualizations</h1>
+      <p class="masthead-meta">U.S. Census and election data, 1978&ndash;2024 &middot; Built with Python, pandas and Plotly</p>
+    </header>
+
+    <section class="prose">
+      <h2>Abstract</h2>
     <p>This website holds visualizations comparing trends related to the voting demographic in the United States between
       different races--
       White, Black, Asian, and Hispanic-- income ranges, and how these two qualities affect the voting demographic for
@@ -28,8 +33,10 @@
       multiple races. For example, a person recorded as white can have only recorded white as their race (single race)
       or white along with some other race. However, one of the datasets only uses single race, so for
       consistency, all information regarding race is gathered from "single" race data samples.</p>
+    </section>
+
     <section class="visualizations" aria-label="Visualizations">
-      <h3>Visualizations</h3>
+      <h2>Visualizations</h2>
 
       <div class="tab-list" role="tablist" aria-label="Visualization groups">
         <button class="tab-button" role="tab" id="tab-trends" type="button"
@@ -53,16 +60,17 @@
           data-src="./visualizationThree/visualizationThree.html"></iframe>
       </div>
     </section>
-  </div>
-  <div conclusion>
-    <h2>Conclusion</h2>
+
+    <section class="prose">
+      <h2>Conclusion</h2>
     <p>It seems, regarding percentage of voting population, the interaction between race and income does not seem
       significant. However, taken into account individually, both race and income do seem significant: Whites have the
       highest voter percentage, followed by Blacks, and Asians having an average voting percentage only 1.94% higher
       than Hispanics (from 1990-2024). People who reported having an annual family income of $150,000 or over have a
       35.9% higher voter
       percentage than those with a family income under $10,000.</p>
-  </div>
+    </section>
+  </main>
 
   <script>
     (function () {
@@ -92,18 +100,45 @@
         }
       }
 
-      // Pin an explicit pixel height on every chart so it stops tracking the viewport.
+      // Pin explicit pixel dimensions on every chart so it stops tracking the viewport.
+      // Width has to be pinned too: setting layout.height turns Plotly's autosize off,
+      // which takes its width responsiveness with it, and the charts would then overflow
+      // the frame at narrow widths. Frame width does not depend on frame height, so
+      // deriving it from the frame is safe.
       function pinCharts(frame) {
         var doc = innerDoc(frame);
         var win = frame.contentWindow;
-        if (!doc) {
+        if (!doc || !doc.body) {
           return;
         }
-        var target = chartHeight();
+        var height = chartHeight();
+        var bodyStyle = win ? win.getComputedStyle(doc.body) : null;
+        var inset = bodyStyle
+          ? (parseFloat(bodyStyle.marginLeft) || 0) + (parseFloat(bodyStyle.marginRight) || 0)
+            + (parseFloat(bodyStyle.paddingLeft) || 0) + (parseFloat(bodyStyle.paddingRight) || 0)
+          : 0;
+        var width = doc.documentElement.clientWidth - inset;
         Array.prototype.forEach.call(doc.querySelectorAll('.plotly-graph-div'), function (div) {
-          div.style.height = target + 'px';
+          div.style.height = height + 'px';
+          if (width > 0) {
+            div.style.width = width + 'px';
+          }
           if (win && win.Plotly && div._fullLayout) {
-            win.Plotly.relayout(div, { height: target });
+            var update = { height: height };
+            if (width > 0) {
+              update.width = width;
+            }
+            // Plotly neither wraps a title nor moves the legend on its own, so at phone
+            // widths the title clips and the upright legend eats most of the plot area.
+            // Desktop keeps the sizing chosen in the .py files.
+            // Plotly will not wrap a title, so at narrow widths it is scaled to the space
+            // it has instead of being clipped. The legend is deliberately left alone: moved
+            // below it collides with the animation sliders, moved above it collides with
+            // the title, and the race labels are too long to sit horizontally either way.
+            update['title.font.size'] = width > 0 && width < 520
+              ? Math.max(11, Math.min(30, Math.floor(width / 26)))
+              : 30;
+            win.Plotly.relayout(div, update);
           }
         });
       }
@@ -126,7 +161,22 @@
           }
         });
         var bodyStyle = win.getComputedStyle(doc.body);
-        return bottom + (parseFloat(bodyStyle.marginBottom) || 0);
+        return bottom
+          + (parseFloat(bodyStyle.marginBottom) || 0)
+          + (parseFloat(bodyStyle.paddingBottom) || 0);
+      }
+
+      // The chart pages carry their own "return to home page" link. Inside a tab that
+      // would load the whole landing page into the panel, so it is hidden while embedded.
+      // Opening a chart page on its own still shows it.
+      function hideReturnLink(frame) {
+        var doc = innerDoc(frame);
+        if (!doc) {
+          return;
+        }
+        Array.prototype.forEach.call(doc.querySelectorAll('.return'), function (link) {
+          link.style.display = 'none';
+        });
       }
 
       function fit(frame) {
@@ -171,6 +221,7 @@
       // Plotly draws after the load event and redraws on width changes, so re-measure
       // when the inner body changes rather than measuring once.
       function watch(frame) {
+        hideReturnLink(frame);
         sync(frame);
         var doc = innerDoc(frame);
         if (doc && doc.body && window.ResizeObserver) {
