@@ -1,39 +1,129 @@
-[original project proposal](/Cartis+Outline+for+Final+Project+Proposal.pdf) | [peer review 1](/peerReview/Peer%20Review%201%20-%20Georg%20Clavin.pdf) | [peer review 2](/peerReview/Simion%20Cartis%20Peer%20Evaluation.pdf) | [Instructor Feedback](/peerReview/InstructorFeedback.png) | [revised project proposal](/CSCE567%20Project%20Proposal%20Revised.pdf)
-## Changes Made to Proposal
-- The second peer review argued that I should provide an explanation as to why I thought race and income may have an effect on who votes, so I added a brief explanation to the introduction section.
+# Voter Turnout Demographics Visualization
 
-- Both the instructor and the second peer review suggested more visuals, with the second peer review specifically suggesting a scatter plot. Seeing this as a good idea, I took up the suggestion and added scatter plots. An additional visualization group for this is now added to the proposed visualizations section.
+Interactive analysis of U.S. voter turnout by race and household income, 1978–2024, built from three
+U.S. Census Bureau datasets. [Live site](https://scartisp.github.io/visualization-project/) · Python,
+Pandas, Plotly, SciPy.
 
-- Seeing as neither a layered histogram nor a normal histogram was used in the third visualization group, I removed them and replaced the description with what was actually used (a grouped and normal bar chart).
+## Overview
 
-## Problems Encountered
-The biggest problem I encountered was data reformatting/cleaning. All of my datasets were .xlsx files instead of .csv files, meaning they all had odd formatting that needed alteration before they could be used in any way. This was especially true for the "tableA2.xlsx" Excel sheet (the one on racial income) which had the years in the same columns as the races. I differentiated between the year and race information using regular expressions and placed them into separate columns.
-However, even after reformatting the data (all of which was done in the reformatData folder), there was still often excess data that was unnecessary for my visuals, as I wanted to take the broadest amount of data possible initially and then filter it down further for a given visualization. Again, this was especially troublesome for the tableA2 excel sheet because it had significantly more race groupings than the others, and due to changes to data collection, some of these racial groups had disjoint years and/or repeated years. I dealt with this by running through a reformatted version of the original excel sheet and only keeping the racial groups that were shared with the hst_vote01 excel sheet and had the most modern data as well as the years with the highest sample size (for years that were repeated).
+The three source datasets ship as `.xlsx` exports with inconsistent, non-tabular layouts — merged
+header cells, embedded footnotes, and in one case, year and category encoded in the same column. The
+`reformatData/` scripts turn each into a clean CSV; `visualizationOne/`, `visualizationTwo/`, and
+`visualizationThree/` each consume those CSVs to produce one group of Plotly charts, statistically
+validate what the chart appears to show, and write a self-contained HTML fragment. `index.html` embeds
+all three fragments in a tabbed interface.
 
-## Design Decisions
-### Color Scheme
-I chose black as my background color for all of my graphs because I wanted a higher contrast for the data points, which I think was especially helpful for the scatter plots, because the 4 points were easy to lose against a white background.
-For the data points, I chose px.colors.qualitative.G10 because I felt it gave a good contrast between each race which was especially important for the first line chart, as often the lines overlapped.
+## Data sources
 
-### Interactive Elements
-All interactive elements were created by the plotly.express Python extension. The main two interactive elements that I find the most important are the hover element and removing/adding elements to a visual. The hover element gives you exact numbers for a given data point, which is useful for actually understanding what values a specific data point has, and adding/removing elements allow you to focus on specific parts of a visual if you so choose.
-Additionally, the ability to play through the different scatter plots is useful for seeing change over time while keeping the scatter plot simple and 2d.
+| File | Contents | Source |
+|---|---|---|
+| `hst_vote01.xlsx` | Voting-age population turnout by race, 1978–2024 | Census Bureau, Table A-1 |
+| `tableA2.xlsx` | Household income by race, 2002–2024 | Census Bureau, Table A-2 |
+| `vote07_2024.xlsx` | Turnout by household income bracket, 2024 only | Census Bureau, Table 7 |
 
-### Graph Choices
-I chose line charts for my first visualization as I wanted to show the change over time of both income and voting percentage for all 4 races. However, to prevent cluttering as well as to show the relation between race and voting percentage without the impact of income, there are two line charts.
-The scatter plot visualizations are essentially attempting to show the same thing. However, there is more emphasis on the interaction between race, racial income, and voting percentage. Additionally, because the midterms consistently have a lower voter turnout, it can be hard to understand trends over time in the first scatter plot. Therefore, I created two more, one for the primaries and the other for the midterms to better show trends for both.
-For the last grouping of visuals, I chose to represent voter percentage for family income ranges with a bar chart because I felt it best showed the distribution for each income range. The addition of the grouped bar chart showing income distribution per race and the normal bar chart showing voting percentage by race was included to show that, while there is a correlation between income range and voting percentage, that correlation is lost when you also look at racial patterns. A grouped bar chart for income distribution per race was chosen because I needed to show the percentage of multiple races for a given income range, and the bar chart for voting percentage per race was chosen because I believed it was a succinct and simple way to show voting trends for a single year (as opposed to over time like in the line charts).
+## Data cleaning
 
-### Visuals Not Used
-- The line charts in the first grouping of visuals could have been put into a single chart that had two different y-axes (called a dual axis chart). However, I decided against that to prevent visual clutter and to more easily understand the relation between race and voting percentage.
+**Recovering a header buried in one column (`reformatA2.py`).** `tableA2.xlsx` interleaves its two
+header dimensions instead of giving each its own column: a row holding a race name (`"WHITE ALONE, NOT
+HISPANIC"`) is followed by ~20 data rows for that race, each starting with a year, until the next race
+label appears. Splitting this into proper `Year` and `Race` columns takes three steps:
 
-- I considered making 3d scatter plots for my second grouping of visuals with time being the third dimension. However, I figured that keeping it 2 dimensional with a slider would achieve the same effect of showing a change over time (maybe even better than with a 3rd dimension) while keeping the layout simple and straight forward.
+1. Extract a leading 4-digit token from column 0 with `str.extract(r"^\s*(\d{4})")`. Rows that succeed
+   are data rows; rows that fail (the race-label rows, which start with text) come back `NaN`.
+2. Take column 0's text *only* on the rows where that extraction failed, and forward-fill it
+   (`.where(...).ffill()`) down through the data rows beneath it — replicating, on flattened rows, what
+   a merged Excel cell would have done for you natively.
+3. Drop every row that still has no year — those are the now-redundant label rows, having already
+   propagated their value forward.
 
-- The grouped bar chart in the last visualization group was originally a stacked bar chart. However, I realized that did not make much sense, as each subgroup of a bar was not part of the same whole, so it was changed to a grouped bar chart.
+The same script locates the sheet's footnote block with a second regex (`^N Not available\.`) so it
+never gets parsed as data.
 
-## Future Work
-Seeing that there is a relationship between annual income range and voting percentage, additional visuals can be made to show how this relation changes over time. However, I currently do not have any data before 2024 regarding this, meaning I would have to first find data that shows voting percentage for income ranges over time. Once this data is found and cleaned, a line chart similar to the ones created for the first visual groupings can be made.
-To further expand on the racial aspects, additional data from individuals who marked two or more racial groups could be acquired and the current visualizations that already exist can be expanded to include these entries as well.
+**Reconciling duplicate years.** The Census re-surveyed mid-2013 (an added post-hurricane sample) and
+changed its income-imputation methodology in 2017, and `tableA2.xlsx` records both the original and
+revised figures for those two years under the same year/race label. `visualizationOne.py` walks the
+cleaned rows for each race and skips the earlier of the two duplicates in both cases — a targeted,
+hand-checked fix rather than a generic "drop duplicate years" rule, since a generic rule would silently
+mask any *other* kind of duplicate the source introduces later without anyone noticing.
 
-## Sources Used:
-[Reported Voting and Registration by Race](/data/hst_vote01.xlsx) | [Households by Total Income](/data/tableA2.xlsx) | [Reported voting and registration by Family Income](/data/vote07_2024.xlsx)
+**Other reformatting.** `hst_vote01.xlsx` and `vote07_2024.xlsx` needed comparatively mechanical
+cleanup: slicing out header/footer boilerplate by row position, dropping the margin-of-error columns
+interleaved between data columns, replacing the Census's own `"N"` (not available) sentinel with a real
+`NaN`, and relabeling verbose income-bracket strings (`"$150,000 to $199,999"`) to short, consistent
+keys reused across all three visualizations.
+
+## Statistical validation
+
+Each chart's headline claim is backed by a `scipy.stats.pearsonr` computation rather than left as a
+visual read of the plot:
+
+- **Pooled vs. per-group correlation are both reported, deliberately.** The four race groups sit at
+  different absolute income levels, so a coefficient computed across all of them pooled together and a
+  coefficient computed within each group separately can disagree — pooling can flatten or even invert a
+  real within-group relationship. Both figures are shown side by side rather than picking whichever one
+  reads better.
+- **Categorical axes get a numeric proxy, with a sensitivity check.** The 2024 income-bracket chart's
+  x-axis is a set of labeled ranges, not a number, so a correlation isn't defined against it directly.
+  Each bracket is mapped to its numeric midpoint before computing `r`. The top bracket (`"$150,000 and
+  over"`) is open-ended, so before trusting the result, the script recomputes `r` after swapping in
+  several different stand-in values ($160k–$250k) for that bracket — the reported coefficient only
+  holds if it doesn't meaningfully move under that swap, and it doesn't.
+- **No coefficient is forced where one isn't valid.** Race is an unordered category with no numeric
+  axis, so the race-only bar charts report no Pearson r at all, rather than computing one against an
+  arbitrary category ordering.
+
+## Visualization design
+
+- **Black chart background, `px.colors.qualitative.G10` palette.** Chosen for contrast — the animated
+  scatter plots in particular lose points against a white background at this marker size.
+- **Line charts (`visualizationOne`)** for the two long-run trends (turnout and income by race, both
+  over time), kept as two separate charts rather than one dual-axis chart to avoid conflating two
+  different units on one y-axis.
+- **Animated scatter (`visualizationTwo`)** to show income vs. turnout evolving year over year without
+  adding a third spatial dimension; split into three separate charts (all years / primary years /
+  midterm years) because midterm turnout runs low enough to compress the primary-year trend when both
+  share one frame range.
+- **Bar charts (`visualizationThree`)** for the single-year 2024 snapshot — grouped, not stacked, since
+  each race's income-bracket distribution isn't a component of one shared whole.
+- Every fragment is written to its `.html` file by hand-assembling the page around the Plotly output
+  (`to_html(full_html=False, ...)`), so hand-authored copy — the stat paragraphs, notes, and return
+  link — survives re-running the generator script.
+
+## Repo structure
+
+```
+data/                   Raw .xlsx exports and their cleaned .csv output
+reformatData/            One cleaning script per raw dataset
+visualizationOne/         Line charts: turnout and income by race over time
+visualizationTwo/         Animated scatter: income vs. turnout by race and year
+visualizationThree/       Bar charts: 2024 snapshot by income bracket and by race
+styles/                  Shared CSS for the landing page and chart pages
+index.html               Landing page — tabbed interface embedding the three chart pages
+```
+
+## Running locally
+
+```
+pip install pandas plotly scipy openpyxl
+cd visualizationOne && python3 visualizationOne.py      # regenerates lineCharts.html
+cd ../visualizationTwo && python3 visualizatinoTwo.py   # regenerates scatterPlots.html
+cd ../visualizationThree && python3 visualizationThree.py  # regenerates visualizationThree.html
+```
+
+Then serve the repo root (`python3 -m http.server`) and open `index.html` — opening it directly via
+`file://` will not load the embedded chart frames.
+
+## Findings
+
+No strong pooled correlation between race and income jointly predicts turnout — but race and income
+each carry a significant, independent relationship to turnout on their own. See the [live
+site](https://scartisp.github.io/visualization-project/) for the full breakdown, per-race figures, and
+caveats on data completeness.
+
+## Limitations & possible extensions
+
+- Turnout-by-income-bracket data is only available for 2024; extending that relationship across time
+  would need an equivalent historical source.
+- All race figures use single-race respondents only, since one of the three source datasets doesn't
+  track multiple-race respondents — excluding that group keeps the datasets comparable but understates
+  the full population.
