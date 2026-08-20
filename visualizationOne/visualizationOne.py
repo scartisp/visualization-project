@@ -71,8 +71,6 @@ incomeFig.update_traces(
     hovertemplate= 'Race: %{customdata[0]}<br>' + 'Year: %{x}<br>' + 'Median Income: $%{y}<extra></extra>'
 )
 #incomeFig.show()
-#TODO the first data table (vote) doesn't have data on mixed races, so truncated second table (money) to match. MENTIONS THIS ON THE PAGE
-#TODO add sliders for year range (a nicety)
 
 raceOrder = ['White Non-Hispanic', 'Black', 'Asian', 'Hispanic (Any Race)']
 

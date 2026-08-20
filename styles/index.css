@@ -90,7 +90,7 @@ h2 {
   margin-bottom: 0;
 }
 
-/* Was plain red body text; a quiet callout reads better and still stands apart. */
+
 .note {
   margin-top: 1.5rem;
   padding: 0.9rem 1.1rem;
@@ -166,9 +166,6 @@ h2 {
   display: none;
 }
 
-/* The height below is only a pre-load fallback -- once the frame's page has loaded,
-   the tab script measures it and sets an exact pixel height inline, so the frame is
-   as tall as its charts and never scrolls internally. */
 .tab-frame {
   display: block;
   width: 100%;
